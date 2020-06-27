@@ -21,3 +21,6 @@ class Peer:
         self.id = hashlib.sha256(hostport.encode("utf8")).hexdigest()
         self.host = host
         self.port = port
+
+    def __str__(self):
+        return "Peer(ID: {}, Host: {}, Port: {})".format(self.id, self.host, self.port)

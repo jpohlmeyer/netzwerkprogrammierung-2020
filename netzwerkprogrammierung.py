@@ -3,6 +3,8 @@
 import time
 import logging
 
+from peer import Peer
+
 """
 This service tries to establish a connection with peer services started on other controllers
 to determine which controller is the master server in a high availabitlity cluster.
@@ -31,13 +33,21 @@ def main():
                         help="Host the service is started on.")
     parser.add_argument("--port", type=int, default="7500",
                         help="Host the service is started on.")
-    parser.add_argument("--searchlist", default="localhost",
-                        help="List of possible hosts for autodetection of peer services.")
+    parser.add_argument("--searchlist", default="",
+                        help="List of possible hosts with ports for autodetection of peer services.")
     args = parser.parse_args()
-    possible_peers = args.searchlist.split(',')
+    possible_peers = []
+    for peer in args.searchlist.split(','):
+        peer_split = peer.split(":")
+        if len(peer_split) == 2:
+            possible_peers.append(Peer(peer_split[0], peer_split[1]))
 
     host = Host(args.host, args.port, possible_peers)
-    server = Server(host)
+    try:
+        server = Server(host)
+    except OSError:
+        logging.error("Address already in use.")
+        return
     server_thread = threading.Thread(target=server.accept_connections)
     server_thread.start()
     try:
