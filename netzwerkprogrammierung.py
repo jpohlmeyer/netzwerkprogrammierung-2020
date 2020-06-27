@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import time
+import logging
+
 """
 This service tries to establish a connection with peer services started on other controllers
 to determine which controller is the master server in a high availabitlity cluster.
@@ -10,6 +13,9 @@ It can be started using the following command:
 """
 
 import argparse
+import threading
+
+from host import Host
 from service import Server
 
 
@@ -18,6 +24,8 @@ def main():
     Main function starting the service.
     :return:
     """
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
     parser = argparse.ArgumentParser(description="Determine master server in a high availability cluster.")
     parser.add_argument("--host", default="localhost",
                         help="Host the service is started on.")
@@ -27,8 +35,17 @@ def main():
                         help="List of possible hosts for autodetection of peer services.")
     args = parser.parse_args()
     possible_peers = args.searchlist.split(',')
-    server = Server(args.host, args.port, possible_peers)
-    server.start()
+
+    host = Host(args.host, args.port, possible_peers)
+    server = Server(host)
+    server_thread = threading.Thread(target=server.accept_connections)
+    server_thread.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        server.stop_server()
+        server_thread.join()
 
 
 if __name__ == "__main__":

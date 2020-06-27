@@ -1,9 +1,8 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from peer import Peer
+import logging
 
-
-class Server(Peer):
+class Server():
     """
     Server class for the Netzwerkprogrammierng project, managing the master status of controllers
     by communicating with services started on all controllers.
@@ -12,33 +11,34 @@ class Server(Peer):
 
     Attributes
     ----------
-    host : str
+    host : Host
         Host the service is started on
-    port : int
-        The port the service is accepting connections
-    peers : [Peer]
-        List of the peers currently in the cluster
-    master : Peer
-        Current master peer
 
     Methods
     -------
-    start()
+    acceptConnections()
         Starts the HTTP server to accept connections
     """
-    def __init__(self, host, port, searchList):
-        super().__init__(host, port)
-        self.searchList = searchList
-        # TODO search List for peers
+    def __init__(self, host):
+        self.host = host
+        self.httpserver = HTTPServer((self.host.host, self.host.port), ServiceRequestHandler)
+        self.httpserver.host = self.host
 
-    def start(self):
+    def accept_connections(self):
         """
-        Starts the HTTP server to accept connections
+        Starts the HTTP server to accept connections.
         :return:
         """
-        with HTTPServer((self.host, self.port), ServiceRequestHandler) as httpserver:
-            httpserver.model = self
-            httpserver.serve_forever()
+        logging.info("HTTP server started")
+        self.httpserver.serve_forever()
+
+    def stop_server(self):
+        """
+        Stops the HTTP server.
+        :return:
+        """
+        logging.info("HTTP server stopped")
+        self.httpserver.shutdown()
 
 
 class ServiceRequestHandler(BaseHTTPRequestHandler):
