@@ -1,5 +1,6 @@
 import json
 import logging
+import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from peer import Peer
 
@@ -77,10 +78,9 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
         if self.path == "/new_node":
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length).decode('utf-8')
-            logging.info(post_data)
             peer_json = json.loads(post_data)
             peer = Peer(peer_json['host'], int(peer_json['port']))
-            self.server.host.peers.append(peer)
+            self.server.host.add_peer(peer)
             self.send_response(200)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
@@ -93,11 +93,23 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length).decode('utf-8')
             votes_dict = json.loads(post_data)
-            self.server.host.vote(votes_dict)
+            vote_thread = threading.Thread(target=self.server.host.vote, args=(votes_dict,))
+            vote_thread.start()
             self.send_response(200)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
             self.wfile.write("".encode('utf-8'))
+        elif self.path == "/new_master":
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            peer_json = json.loads(post_data)
+            peer = Peer(peer_json['host'], int(peer_json['port']))
+            self.server.host.update_master(peer)
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write("".encode('utf-8'))
+            logging.info("New master {}.".format(peer))
         else:
             self.send_response(404)
             self.send_header("Content-type", "text/plain")

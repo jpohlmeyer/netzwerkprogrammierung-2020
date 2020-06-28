@@ -30,12 +30,17 @@ class Host(Peer):
         Initiating the voting process after the master died.
     vote()
         Casting a vote for a new master on request of another service and forward to the next peer.
+    update_master()
+        Updates the current master peer.
+    add_peer()
+        Append a new peer to the list of peers.
     """
 
     def __init__(self, host, port, search_list):
         super().__init__(host, port)
         self.search_list = search_list
         self.master = None
+        self.peers = None
 
     def start(self):
         """
@@ -47,6 +52,14 @@ class Host(Peer):
         if len(self.peers) == 0:
             self.master = self
         self.__join_cluster()
+
+    def add_peer(self, peer):
+        """
+        Append new peer to list of peers.
+        :param peer: peer to add to list
+        :return:
+        """
+        self.peers.append(peer)
 
     def request_heartbeats(self):
         """
@@ -66,12 +79,17 @@ class Host(Peer):
                     self.peers.remove(peer)
                     if peer.id == self.master.id:
                         logging.warning("master is dead".format(peer))
-                        sorted_peers = sorted(self.peers, reverse=True, key=lambda p: p.id)
-                        if self.id > sorted_peers[0].id:
-                            logging.info("starting vote".format(peer))
-                            self.start_vote()
+                        if len(self.peers) != 0:
+                            sorted_peers = sorted(self.peers, reverse=True, key=lambda p: p.id)
+                            if self.id > sorted_peers[0].id:
+                                logging.info("starting vote".format(peer))
+                                self.start_vote()
+                            else:
+                                logging.info("waiting to vote".format(peer))
                         else:
-                            logging.info("waiting to vote".format(peer))
+                            logging.info("I am alone, and therefore the new master.")
+                            self.master = self
+                            return
                 continue
             if r.status_code == 200 and r.text == "pong":
                 peer.active = True
@@ -84,7 +102,7 @@ class Host(Peer):
         :return:
         """
         time.sleep(2)  # to make sure every service knows the master is dead
-        all_peers = self.peers
+        all_peers = self.peers.copy()
         all_peers.append(Peer(self.host, self.port))
         voting_message = {p.id: 0 for p in all_peers}
         voting_message["starter"] = self.id
@@ -100,13 +118,41 @@ class Host(Peer):
         if votes_dict["starter"] == self.id:
             del(votes_dict["starter"])
             sorted_votes = [k for k, v in sorted(votes_dict.items(), reverse=True, key=lambda item: item[1])]
-            logging.info("new master is {}".format(sorted_votes[0]))
-            # TODO send master update
+            new_master = None
+            for p in self.peers:
+                if p.id == sorted_votes[0]:
+                    new_master = p
+            if new_master is None:
+                if self.id == sorted_votes[0]:
+                    new_master = self
+                else:
+                    logging.error("Could not determine new master.")
+                    return
+            logging.info("new master is {}".format(new_master))
+            self.master = new_master
+            for peer in self.peers:
+                try:
+                    r = requests.post("http://" + peer.host + ":" + str(peer.port) + "/new_master",
+                                      json=new_master.to_dict())
+                    if r.status_code != 200:
+                        raise requests.exceptions.ConnectionError
+                except requests.exceptions.ConnectionError:
+                    logging.error("{} did not answer request update master successfully.".format(peer))
         else:
             self.__cast_vote(votes_dict)
 
+    def update_master(self, peer):
+        """
+        Finds the peer object that corresponds to the given peer object and set it as master.
+        :param peer: new master
+        :return:
+        """
+        for p in self.peers:
+            if p.id == peer.id:
+                self.master = peer
+
     def __cast_vote(self, votes_dict):
-        all_peers = self.peers
+        all_peers = self.peers.copy()
         all_peers.append(Peer(self.host, self.port))
         all_peers = sorted(all_peers, reverse=True, key=lambda p: p.id)
         next_peer = all_peers[0]
@@ -116,8 +162,11 @@ class Host(Peer):
                 break
         votes_dict[all_peers[0].id] = votes_dict[all_peers[0].id] + 1
         logging.info("sending vote to {}".format(next_peer))
-        r = requests.post("http://"+next_peer.host+":"+str(next_peer.port)+"/vote", json=votes_dict)
-        if r.status_code != 200:
+        try:
+            r = requests.post("http://"+next_peer.host+":"+str(next_peer.port)+"/vote", json=votes_dict)
+            if r.status_code != 200:
+                raise requests.exceptions.ConnectionError
+        except requests.exceptions.ConnectionError:
             logging.error("{} did not accept voting message".format(next_peer))
 
     def __searchPeers(self):
