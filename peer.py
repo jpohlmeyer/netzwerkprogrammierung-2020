@@ -24,3 +24,6 @@ class Peer:
 
     def __str__(self):
         return "Peer(ID: {}, Host: {}, Port: {})".format(self.id, self.host, self.port)
+
+    def to_dict(self):
+        return {"id": self.id, "host": self.host, "port": self.port}

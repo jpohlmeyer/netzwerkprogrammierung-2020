@@ -51,9 +51,11 @@ def main():
     server_thread = threading.Thread(target=server.accept_connections)
     server_thread.start()
     try:
+        host.start()
         while True:
             time.sleep(1)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, SystemExit):
+        logging.info("Terminating.")
         server.stop_server()
         server_thread.join()
 
