@@ -29,9 +29,10 @@ class Host(Peer):
     def __join_cluster(self):
         for peer in self.peers:
             try:
-                r = requests.post("http://"+peer.host+":"+str(peer.port)+"/new_node", data=self.to_dict())
+                r = requests.post("http://"+peer.host+":"+str(peer.port)+"/new_node", json=self.to_dict())
             except requests.exceptions.ConnectionError:
-                continue
+                logging.error("{} did not answer request to be added to the cluster succesfully.".format(peer))
+                raise SystemExit
             if r.status_code == 200:
                 if r.text == "master":
                     logging.info("Found current master: {}".format(peer))
