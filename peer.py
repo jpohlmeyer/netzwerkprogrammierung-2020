@@ -1,5 +1,6 @@
 import hashlib
 
+
 class Peer:
     """
     Peer class representing a peer host in a high availability cluster running the same service.
@@ -14,6 +15,8 @@ class Peer:
         Host the service is started on
     port : int
         The port the service is accepting connections
+    active : bool
+        True if the last heartbeat request was succesfully answered, False if not.
     """
 
     def __init__(self, host, port):
@@ -27,4 +30,8 @@ class Peer:
         return "Peer(ID: {}, Host: {}, Port: {})".format(self.id, self.host, self.port)
 
     def to_dict(self):
+        """
+        Generate a dict, representing the Peer. Used in the payload of requests.
+        :return: dict with id, host and port
+        """
         return {"id": self.id, "host": self.host, "port": self.port}

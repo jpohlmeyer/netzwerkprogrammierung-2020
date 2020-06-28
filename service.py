@@ -1,16 +1,12 @@
 import json
-from collections import namedtuple
-from http.server import BaseHTTPRequestHandler, HTTPServer
-
 import logging
-
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from peer import Peer
 
 
 class Server():
     """
-    Server class for the Netzwerkprogrammierng project, managing the master status of controllers
-    by communicating with services started on all controllers.
+    Server class for managing the HTTP requests made to the service.
 
     ...
 

@@ -1,21 +1,54 @@
-from peer import Peer
-
 import requests
 import logging
+from peer import Peer
 
 
 class Host(Peer):
+    """
+    Host class is sending the HTTP requests to the other services, to determine if they are alive,
+    or to vote for a new master. It knows the peer services and the current master.
+
+    ...
+
+    Attributes
+    ----------
+    search_list : [Peer]
+        List of possible peers
+    peers : [Peer]
+        List of currently active peers
+    master : Peer
+        Current master
+
+    Methods
+    -------
+    start()
+        Starts the host. It will search for peers and request to join the cluster.
+    request_heartbeats()
+        Send a heartbeat request to all current peers.
+    """
+
     def __init__(self, host, port, search_list):
         super().__init__(host, port)
         self.search_list = search_list
+        self.master = None
 
     def start(self):
+        """
+        Host scans the possible peers for valid answers, and requests to join the cluster.
+        It also determines the master peer.
+        :return:
+        """
         self.__searchPeers()
         if len(self.peers) == 0:
             self.master = self
         self.__join_cluster()
 
     def request_heartbeats(self):
+        """
+        Send a heartbeart request to all current peers.
+        Two consecutive missed heartbeats result in death.
+        :return:
+        """
         for peer in self.peers:
             try:
                 r = requests.get("http://"+peer.host+":"+str(peer.port)+"/heartbeat")
