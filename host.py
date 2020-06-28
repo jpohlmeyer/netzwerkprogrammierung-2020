@@ -15,6 +15,22 @@ class Host(Peer):
             self.master = self
         self.__join_cluster()
 
+    def request_heartbeats(self):
+        for peer in self.peers:
+            try:
+                r = requests.get("http://"+peer.host+":"+str(peer.port)+"/heartbeat")
+            except requests.exceptions.ConnectionError:
+                if peer.active:
+                    peer.active = False
+                    logging.info("{} missed first heartbeat.".format(peer))
+                else:
+                    logging.warning("{} missed second heartbeat and is determined dead.".format(peer))
+                    self.peers.remove(peer)
+                    # TODO check for master
+                continue
+            if r.status_code == 200 and r.text == "pong":
+                peer.active = True
+
     def __searchPeers(self):
         self.peers = []
         for peer in self.search_list:

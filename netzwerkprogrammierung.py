@@ -54,6 +54,7 @@ def main():
         host.start()
         while True:
             time.sleep(1)
+            host.request_heartbeats()
     except (KeyboardInterrupt, SystemExit):
         logging.info("Terminating.")
         server.stop_server()
