@@ -89,13 +89,20 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
                 answer = "master"
             self.wfile.write(answer.encode('utf-8'))
             logging.info("Added peer {} to the cluster.".format(peer))
-            return
+        elif self.path == "/vote":
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            votes_dict = json.loads(post_data)
+            self.server.host.vote(votes_dict)
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write("".encode('utf-8'))
         else:
             self.send_response(404)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
             self.wfile.write("Not Found.".encode('utf-8'))
-            return
 
     def log_request(self, code='-', size=''):
         pass

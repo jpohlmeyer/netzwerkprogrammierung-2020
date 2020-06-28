@@ -1,3 +1,4 @@
+import time
 import requests
 import logging
 from peer import Peer
@@ -59,10 +60,48 @@ class Host(Peer):
                 else:
                     logging.warning("{} missed second heartbeat and is determined dead.".format(peer))
                     self.peers.remove(peer)
-                    # TODO check for master
+                    if peer.id == self.master.id:
+                        logging.warning("master is dead".format(peer))
+                        sorted_peers = sorted(self.peers, reverse=True, key=lambda p: p.id)
+                        if self.id > sorted_peers[0].id:
+                            logging.info("starting vote".format(peer))
+                            self.start_vote()
+                        else:
+                            logging.info("waiting to vote".format(peer))
                 continue
             if r.status_code == 200 and r.text == "pong":
                 peer.active = True
+
+    def start_vote(self):
+        time.sleep(2)  # to make sure every service knows the master is dead
+        all_peers = self.peers
+        all_peers.append(Peer(self.host, self.port))
+        voting_message = {p.id: 0 for p in all_peers}
+        voting_message["starter"] = self.id
+        self.__cast_vote(voting_message)
+
+    def vote(self, votes_dict):
+        if votes_dict["starter"] == self.id:
+            del(votes_dict["starter"])
+            sorted_votes = [k for k, v in sorted(votes_dict.items(), reverse=True, key=lambda item: item[1])]
+            logging.info("new master is {}".format(sorted_votes[0]))
+        else:
+            self.__cast_vote(votes_dict)
+
+    def __cast_vote(self, votes_dict):
+        all_peers = self.peers
+        all_peers.append(Peer(self.host, self.port))
+        all_peers = sorted(all_peers, reverse=True, key=lambda p: p.id)
+        next_peer = all_peers[0]
+        for i in range(1,len(all_peers)):
+            if all_peers[i].id < self.id:
+                next_peer = all_peers[i]
+                break
+        votes_dict[all_peers[0].id] = votes_dict[all_peers[0].id] + 1
+        logging.info("sending vote to {}".format(next_peer))
+        r = requests.post("http://"+next_peer.host+":"+str(next_peer.port)+"/vote", json=votes_dict)
+        if r.status_code != 200:
+            logging.error("{} did not accept voting message".format(next_peer))
 
     def __searchPeers(self):
         self.peers = []
