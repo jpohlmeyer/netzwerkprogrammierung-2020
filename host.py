@@ -26,6 +26,10 @@ class Host(Peer):
         Starts the host. It will search for peers and request to join the cluster.
     request_heartbeats()
         Send a heartbeat request to all current peers.
+    start_vote()
+        Initiating the voting process after the master died.
+    vote()
+        Casting a vote for a new master on request of another service and forward to the next peer.
     """
 
     def __init__(self, host, port, search_list):
@@ -73,6 +77,12 @@ class Host(Peer):
                 peer.active = True
 
     def start_vote(self):
+        """
+        Will sleep for 2 seconds to allow for all other services to determine the old master dead.
+        Then it will trigger the voting process by initializing the vote list, giving its vote
+        and send the voting request to the next service.
+        :return:
+        """
         time.sleep(2)  # to make sure every service knows the master is dead
         all_peers = self.peers
         all_peers.append(Peer(self.host, self.port))
@@ -81,10 +91,17 @@ class Host(Peer):
         self.__cast_vote(voting_message)
 
     def vote(self, votes_dict):
+        """
+        Will vote on request of another service
+        and forward the new vote count to the next peer.
+        :param votes_dict: current vote count
+        :return:
+        """
         if votes_dict["starter"] == self.id:
             del(votes_dict["starter"])
             sorted_votes = [k for k, v in sorted(votes_dict.items(), reverse=True, key=lambda item: item[1])]
             logging.info("new master is {}".format(sorted_votes[0]))
+            # TODO send master update
         else:
             self.__cast_vote(votes_dict)
 
