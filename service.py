@@ -62,6 +62,11 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/plain")
             self.end_headers()
             self.wfile.write("Netzwerkprogrammierung2020".encode('utf-8'))
+        elif self.path == "/heartbeat":
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write("pong".encode('utf-8'))
         else:
             self.send_response(404)
             self.send_header("Content-type", "text/plain")
