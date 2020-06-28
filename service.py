@@ -89,7 +89,7 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/plain")
             self.end_headers()
             answer = "not master"
-            if self.server.host.master:
+            if self.server.host.master == self.server.host:
                 answer = "master"
             self.wfile.write(answer.encode('utf-8'))
             logging.info("Added peer {} to the cluster.".format(peer))
@@ -100,3 +100,6 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write("Not Found.".encode('utf-8'))
             return
+
+    def log_request(self, code='-', size=''):
+        pass
