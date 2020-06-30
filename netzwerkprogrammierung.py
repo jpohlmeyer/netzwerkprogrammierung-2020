@@ -2,7 +2,8 @@
 
 import time
 import logging
-
+import sys
+from errors import JoiningClusterError
 from peer import Peer
 
 """
@@ -45,21 +46,26 @@ def main():
         peer_split = peer.split(":")
         if len(peer_split) == 2:
             possible_peers.append(Peer(peer_split[0], peer_split[1]))
-
     host = Host(args.host, args.port, possible_peers, args.masterscript, args.slavescript)
     try:
         server = Server(host)
     except OSError:
-        logging.error("Address already in use.")
-        return
+        logging.error("Address already in use. Exiting.")
+        sys.exit(1)
     server_thread = threading.Thread(target=server.accept_connections)
     server_thread.start()
     try:
         host.start()
+    except JoiningClusterError:
+        logging.error("Could not join cluster. Exiting.")
+        server.stop_server()
+        server_thread.join()
+        sys.exit(1)
+    try:
         while True:
             time.sleep(1)
             host.request_heartbeats()
-    except (KeyboardInterrupt, SystemExit):
+    except KeyboardInterrupt:
         logging.info("Terminating.")
         server.stop_server()
         server_thread.join()

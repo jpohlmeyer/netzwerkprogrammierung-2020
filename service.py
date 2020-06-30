@@ -72,9 +72,16 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
         :return:
         """
         if self.path == "/new_node":
+            if self.server.host.master is None:
+                logging.info("Did not allow new peer to join during voting process.")
+                self.__respond_service_unavailable("Service temporarily unavailable.")
+                return  # Do not accept new peers to the cluster while there is no new master yet.
             peer_json = self.__receive_post_payload()
             peer = Peer(peer_json['host'], int(peer_json['port']))
-            self.server.host.add_peer(peer)
+            if not self.server.host.add_peer(peer):
+                logging.info("Did not allow duplicate peer to join.")
+                self.__respond_service_unavailable("Duplicate ID detected.")
+                return  # Do not accept new peers to the cluster while there is no new master yet.
             self.__set_response()
             if self.server.host.master == self.server.host:
                 answer = "master"
@@ -110,6 +117,12 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
+
+    def __respond_service_unavailable(self, message):
+        self.send_response(503)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(message.encode('utf-8'))
 
     def log_request(self, code='-', size='-'):
         """

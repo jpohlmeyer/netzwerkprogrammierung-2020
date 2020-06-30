@@ -1,7 +1,9 @@
-import time
 import requests
 import logging
 import subprocess
+import threading
+
+from errors import JoiningClusterError, VotingError
 from peer import Peer
 
 
@@ -24,6 +26,8 @@ class Host(Peer):
         Name of the masterscript that will be executed by the master on change.
     slavescript : str
         Name of the slavescript that will be executed by the slaves on change.
+    lock : threading.Lock
+        Lock that will used so make sure threads are not inferring with each other
 
     Methods
     -------
@@ -46,6 +50,7 @@ class Host(Peer):
         self.search_list = search_list
         self.masterscript = masterscript
         self.slavescript = slavescript
+        self.lock = threading.RLock()
         self.master = None
         self.peers = None
 
@@ -55,7 +60,7 @@ class Host(Peer):
         It also determines the master peer and executes the script accordingly.
         :return:
         """
-        self.__searchPeers()
+        self.__search_peers()
         if len(self.peers) == 0:
             self.master = self
         self.__join_cluster()
@@ -67,7 +72,12 @@ class Host(Peer):
         :param peer: peer to add to list
         :return:
         """
-        self.peers.append(peer)
+        with self.lock:
+            for p in self.peers:
+                if peer.id == p.id:
+                    return False # Make sure there are no duplicates
+            self.peers.append(peer)
+        return True
 
     def request_heartbeats(self):
         """
@@ -75,34 +85,33 @@ class Host(Peer):
         Two consecutive missed heartbeats result in death.
         :return:
         """
-        if self.master is None:
-            return  # currently in process of finding new master
-        for peer in self.peers:
-            try:
-                r = requests.get("http://"+peer.host+":"+str(peer.port)+"/heartbeat")
-            except requests.exceptions.ConnectionError:
-                if peer.active:
-                    peer.active = False
-                    logging.info("{} missed first heartbeat.".format(peer))
-                else:
-                    logging.warning("{} missed second heartbeat and is determined dead.".format(peer))
-                    self.peers.remove(peer)
-                    if self.master is not None and peer.id == self.master.id:
-                        logging.warning("master is dead".format(peer))
-                        if len(self.peers) != 0:
-                            sorted_peers = sorted(self.peers, reverse=True, key=lambda p: p.id)
-                            if self.id > sorted_peers[0].id:
-                                logging.info("starting vote".format(peer))
-                                self.start_vote()
+        with self.lock:
+            for peer in self.peers:
+                try:
+                    r = requests.get("http://"+peer.host+":"+str(peer.port)+"/heartbeat")
+                except requests.exceptions.ConnectionError:
+                    if peer.active:
+                        peer.active = False
+                        logging.info("{} missed first heartbeat.".format(peer))
+                    else:
+                        logging.warning("{} missed second heartbeat and is determined dead.".format(peer))
+                        self.peers.remove(peer)
+                        if self.master is not None and peer.id == self.master.id:
+                            logging.warning("master is dead".format(peer))
+                            if len(self.peers) != 0:
+                                sorted_peers = sorted(self.peers, reverse=True, key=lambda p: p.id)
+                                if self.id > sorted_peers[0].id:
+                                    logging.info("starting vote".format(peer))
+                                    self.start_vote()
+                                else:
+                                    logging.info("waiting to vote".format(peer))
                             else:
-                                logging.info("waiting to vote".format(peer))
-                        else:
-                            logging.info("I am alone, and therefore the new master.")
-                            self.update_master(self)
-                            return
-                continue
-            if r.status_code == 200 and r.text == "pong":
-                peer.active = True
+                                logging.info("I am alone, and therefore the new master.")
+                                self.update_master(self)
+                                return
+                    continue
+                if r.status_code == 200 and r.text == "pong":
+                    peer.active = True
 
     def start_vote(self):
         """
@@ -110,7 +119,8 @@ class Host(Peer):
         and send the voting request to the next service.
         :return:
         """
-        all_peers = self.peers.copy()
+        with self.lock:
+            all_peers = self.peers.copy()
         all_peers.append(Peer(self.host, self.port))
         voting_message = {p.id: 0 for p in all_peers}
         voting_message["starter"] = self.id
@@ -175,14 +185,15 @@ class Host(Peer):
 
     def __cast_vote(self, votes_dict):
         self.master = None
-        for peer in self.peers:
-            if peer.id == votes_dict["old_master"]:
-                self.peers.remove(peer)
-        all_peers = self.peers.copy()
+        with self.lock:
+            for peer in self.peers:
+                if peer.id == votes_dict["old_master"]:
+                    self.peers.remove(peer)
+            all_peers = self.peers.copy()
         all_peers.append(Peer(self.host, self.port))
         all_peers = sorted(all_peers, reverse=True, key=lambda p: p.id)
         next_peer = all_peers[0]
-        for i in range(1,len(all_peers)):
+        for i in range(1, len(all_peers)):
             if all_peers[i].id < self.id:
                 next_peer = all_peers[i]
                 break
@@ -191,11 +202,11 @@ class Host(Peer):
         try:
             r = requests.post("http://"+next_peer.host+":"+str(next_peer.port)+"/vote", json=votes_dict)
             if r.status_code != 200:
-                raise requests.exceptions.ConnectionError
-        except requests.exceptions.ConnectionError:
+                raise VotingError
+        except VotingError:
             logging.error("{} did not accept voting message".format(next_peer))
 
-    def __searchPeers(self):
+    def __search_peers(self):
         self.peers = []
         for peer in self.search_list:
             try:
@@ -211,12 +222,12 @@ class Host(Peer):
             try:
                 r = requests.post("http://"+peer.host+":"+str(peer.port)+"/new_node", json=self.to_dict())
             except requests.exceptions.ConnectionError:
-                logging.error("{} did not answer request to be added to the cluster succesfully.".format(peer))
-                raise SystemExit
+                raise JoiningClusterError
             if r.status_code == 200:
                 if r.text == "master":
                     logging.info("Found current master: {}".format(peer))
                     self.master = peer
             else:
-                logging.error("{} did not answer request to be added to the cluster succesfully.".format(peer))
-                raise SystemExit
+                raise JoiningClusterError
+        if self.master is None:
+            raise JoiningClusterError
