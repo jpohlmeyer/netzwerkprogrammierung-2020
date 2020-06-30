@@ -75,6 +75,8 @@ class Host(Peer):
         Two consecutive missed heartbeats result in death.
         :return:
         """
+        if self.master is None:
+            return  # currently in process of finding new master
         for peer in self.peers:
             try:
                 r = requests.get("http://"+peer.host+":"+str(peer.port)+"/heartbeat")
@@ -85,7 +87,7 @@ class Host(Peer):
                 else:
                     logging.warning("{} missed second heartbeat and is determined dead.".format(peer))
                     self.peers.remove(peer)
-                    if peer.id == self.master.id:
+                    if self.master is not None and peer.id == self.master.id:
                         logging.warning("master is dead".format(peer))
                         if len(self.peers) != 0:
                             sorted_peers = sorted(self.peers, reverse=True, key=lambda p: p.id)
@@ -96,7 +98,7 @@ class Host(Peer):
                                 logging.info("waiting to vote".format(peer))
                         else:
                             logging.info("I am alone, and therefore the new master.")
-                            self.master = self
+                            self.update_master(self)
                             return
                 continue
             if r.status_code == 200 and r.text == "pong":
@@ -104,16 +106,15 @@ class Host(Peer):
 
     def start_vote(self):
         """
-        Will sleep for 2 seconds to allow for all other services to determine the old master dead.
-        Then it will trigger the voting process by initializing the vote list, giving its vote
+        Will trigger the voting process by initializing the vote list, giving its vote
         and send the voting request to the next service.
         :return:
         """
-        time.sleep(2)  # to make sure every service knows the master is dead
         all_peers = self.peers.copy()
         all_peers.append(Peer(self.host, self.port))
         voting_message = {p.id: 0 for p in all_peers}
         voting_message["starter"] = self.id
+        voting_message["old_master"] = self.master.id
         self.__cast_vote(voting_message)
 
     def vote(self, votes_dict):
@@ -125,6 +126,7 @@ class Host(Peer):
         """
         if votes_dict["starter"] == self.id:
             del(votes_dict["starter"])
+            del(votes_dict["old_master"])
             sorted_votes = [k for k, v in sorted(votes_dict.items(), reverse=True, key=lambda item: item[1])]
             new_master = None
             for p in self.peers:
@@ -165,11 +167,17 @@ class Host(Peer):
 
     def __execute_script(self):
         if self.master.id == self.id:
+            logging.info("Executing master script:")
             subprocess.Popen("./"+self.masterscript)
         else:
+            logging.info("Executing slave script:")
             subprocess.Popen("./"+self.slavescript)
 
     def __cast_vote(self, votes_dict):
+        self.master = None
+        for peer in self.peers:
+            if peer.id == votes_dict["old_master"]:
+                self.peers.remove(peer)
         all_peers = self.peers.copy()
         all_peers.append(Peer(self.host, self.port))
         all_peers = sorted(all_peers, reverse=True, key=lambda p: p.id)
