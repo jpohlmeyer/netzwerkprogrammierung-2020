@@ -20,6 +20,10 @@ class Host(Peer):
         List of currently active peers
     master : Peer
         Current master
+    masterscript : str
+        Name of the masterscript that will be executed by the master on change.
+    slavescript : str
+        Name of the slavescript that will be executed by the slaves on change.
 
     Methods
     -------
