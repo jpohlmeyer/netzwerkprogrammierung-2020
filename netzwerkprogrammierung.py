@@ -35,6 +35,10 @@ def main():
                         help="Host the service is started on.")
     parser.add_argument("--searchlist", default="",
                         help="List of possible hosts with ports for autodetection of peer services.")
+    parser.add_argument("--masterscript", default="masterscript.sh",
+                        help="Script that will be executed by the new master after the master changes.")
+    parser.add_argument("--slavescript", default="slavescript.sh",
+                        help="Script that will be executed by every slave after the master changes.")
     args = parser.parse_args()
     possible_peers = []
     for peer in args.searchlist.split(','):
@@ -42,7 +46,7 @@ def main():
         if len(peer_split) == 2:
             possible_peers.append(Peer(peer_split[0], peer_split[1]))
 
-    host = Host(args.host, args.port, possible_peers)
+    host = Host(args.host, args.port, possible_peers, args.masterscript, args.slavescript)
     try:
         server = Server(host)
     except OSError:

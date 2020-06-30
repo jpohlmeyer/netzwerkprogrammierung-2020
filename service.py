@@ -76,9 +76,10 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
             peer = Peer(peer_json['host'], int(peer_json['port']))
             self.server.host.add_peer(peer)
             self.__set_response()
-            answer = "not master"
             if self.server.host.master == self.server.host:
                 answer = "master"
+            else:
+                answer = "not master"
             self.wfile.write(answer.encode('utf-8'))
             logging.info("Added peer {} to the cluster.".format(peer))
         elif self.path == "/vote":
@@ -110,5 +111,12 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/plain")
         self.end_headers()
 
-    def log_request(self, code='-', size=''):
+    def log_request(self, code='-', size='-'):
+        """
+        Override log_request method from BaseHTTPRequestHandler to not log every
+        normal incoming HTTP request to stdout.
+        :param code: -
+        :param size: -
+        :return:
+        """
         pass

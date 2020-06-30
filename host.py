@@ -1,6 +1,7 @@
 import time
 import requests
 import logging
+import subprocess
 from peer import Peer
 
 
@@ -36,22 +37,25 @@ class Host(Peer):
         Append a new peer to the list of peers.
     """
 
-    def __init__(self, host, port, search_list):
+    def __init__(self, host, port, search_list, masterscript, slavescript):
         super().__init__(host, port)
         self.search_list = search_list
+        self.masterscript = masterscript
+        self.slavescript = slavescript
         self.master = None
         self.peers = None
 
     def start(self):
         """
         Host scans the possible peers for valid answers, and requests to join the cluster.
-        It also determines the master peer.
+        It also determines the master peer and executes the script accordingly.
         :return:
         """
         self.__searchPeers()
         if len(self.peers) == 0:
             self.master = self
         self.__join_cluster()
+        self.__execute_script()
 
     def add_peer(self, peer):
         """
@@ -129,7 +133,7 @@ class Host(Peer):
                     logging.error("Could not determine new master.")
                     return
             logging.info("new master is {}".format(new_master))
-            self.master = new_master
+            self.update_master(new_master)
             for peer in self.peers:
                 try:
                     r = requests.post("http://" + peer.host + ":" + str(peer.port) + "/new_master",
@@ -147,9 +151,19 @@ class Host(Peer):
         :param peer: new master
         :return:
         """
-        for p in self.peers:
-            if p.id == peer.id:
-                self.master = peer
+        if self.id == peer.id:
+            self.master = self
+        else:
+            for p in self.peers:
+                if p.id == peer.id:
+                    self.master = peer
+        self.__execute_script()
+
+    def __execute_script(self):
+        if self.master.id == self.id:
+            subprocess.Popen("./"+self.masterscript)
+        else:
+            subprocess.Popen("./"+self.slavescript)
 
     def __cast_vote(self, votes_dict):
         all_peers = self.peers.copy()
