@@ -44,6 +44,7 @@ class Server:
         """
         logging.info("HTTP server stopped")
         self.httpserver.shutdown()
+        self.httpserver.server_close()
 
 
 class ServiceRequestHandler(BaseHTTPRequestHandler):

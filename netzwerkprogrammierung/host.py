@@ -53,7 +53,7 @@ class Host(Peer):
         self.slavescript = slavescript
         self.lock = threading.RLock()
         self.master = None
-        self.peers = None
+        self.peers = []
 
     def start(self):
         """

@@ -43,3 +43,11 @@ It can further be build locally with the following command:
 ```shell script
 pdoc3 --html -o docs netzwerkprogrammierung
 ```
+
+## Tests
+
+The unit tests can be found in the tests package and can be run with the following command:
+
+```shell script
+python3 -m unittest discover
+```
