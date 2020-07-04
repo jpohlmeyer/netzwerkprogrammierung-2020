@@ -1,26 +1,21 @@
-#!/usr/bin/env python3
-
-import time
-import logging
-import sys
-from errors import JoiningClusterError
-from peer import Peer
-
 """
 This service tries to establish a connection with peer services started on other controllers
 to determine which controller is the master server in a high availabitlity cluster.
 It can be started using the following command:
 
-    python3 netzwerkprogrammierung.py [-h] [--host HOST] [--port PORT] [--searchlist SEARCHLIST]
+    python3 app.py [-h] [--host HOST] [--port PORT] [--searchlist SEARCHLIST]
 
 """
 
 import argparse
 import threading
-
-from host import Host
-from service import Server
-
+import time
+import logging
+import sys
+from netzwerkprogrammierung.errors import JoiningClusterError
+from netzwerkprogrammierung.peer import Peer
+from netzwerkprogrammierung.host import Host
+from netzwerkprogrammierung.service import Server
 
 def main():
     """
@@ -69,7 +64,3 @@ def main():
         logging.info("Terminating.")
         server.stop_server()
         server_thread.join()
-
-
-if __name__ == "__main__":
-    main()

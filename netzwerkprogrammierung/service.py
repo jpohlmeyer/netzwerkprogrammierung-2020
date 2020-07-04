@@ -2,7 +2,7 @@ import json
 import logging
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from peer import Peer
+from netzwerkprogrammierung.peer import Peer
 
 
 class Server:

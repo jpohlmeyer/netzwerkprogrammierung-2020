@@ -3,8 +3,8 @@ import logging
 import subprocess
 import threading
 
-from errors import JoiningClusterError, VotingError
-from peer import Peer
+from netzwerkprogrammierung.errors import JoiningClusterError, VotingError
+from netzwerkprogrammierung.peer import Peer
 
 
 class Host(Peer):
