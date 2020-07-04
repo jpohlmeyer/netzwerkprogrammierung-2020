@@ -37,7 +37,7 @@ python3 -m netzwerkprogrammierung --host localhost --port 7502 --searchlist loca
 
 ## Documentation
 
-A current build of the PyDoc documentation is available in the docs folder.
+A current HTML version of the PyDoc documentation is available in the docs folder.
 It can further be build locally with the following command:
 
 ```shell script
