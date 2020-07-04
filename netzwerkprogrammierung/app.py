@@ -1,10 +1,6 @@
 """
 This service tries to establish a connection with peer services started on other controllers
 to determine which controller is the master server in a high availabitlity cluster.
-It can be started using the following command:
-
-    python3 app.py [-h] [--host HOST] [--port PORT] [--searchlist SEARCHLIST]
-
 """
 
 import argparse
@@ -17,10 +13,10 @@ from netzwerkprogrammierung.peer import Peer
 from netzwerkprogrammierung.host import Host
 from netzwerkprogrammierung.service import Server
 
+
 def main():
     """
     Main function starting the service.
-    :return:
     """
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 

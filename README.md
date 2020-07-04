@@ -34,3 +34,12 @@ python3 -m netzwerkprogrammierung --host localhost --port 7501 --searchlist loca
 ```shell script
 python3 -m netzwerkprogrammierung --host localhost --port 7502 --searchlist localhost:7501,localhost:7500
 ```
+
+## Documentation
+
+A current build of the PyDoc documentation is available in the docs folder.
+It can further be build locally with the following command:
+
+```shell script
+pdoc3 --html -o docs netzwerkprogrammierung
+```

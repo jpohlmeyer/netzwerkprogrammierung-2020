@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.3" />
+<title>netzwerkprogrammierung.host API documentation</title>
+<meta name="description" content="In the host module the Host class is defined." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>netzwerkprogrammierung.host</code></h1>
+</header>
+<section id="section-intro">
+<p>In the host module the Host class is defined.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+In the host module the Host class is defined.
+&#34;&#34;&#34;
+
+import requests
+import logging
+import subprocess
+import threading
+from netzwerkprogrammierung.errors import JoiningClusterError, VotingError
+from netzwerkprogrammierung.peer import Peer
+
+
+class Host(Peer):
+    &#34;&#34;&#34;
+    Host class is sending the HTTP requests to the other services, to determine if they are alive,
+    or to vote for a new master. It knows the peer services and the current master.
+
+    Attributes
+    ----------
+    search_list : [Peer]
+        List of possible peers
+    peers : [Peer]
+        List of currently active peers
+    master : Peer
+        Current master
+    masterscript : str
+        Name of the masterscript that will be executed by the master on change.
+    slavescript : str
+        Name of the slavescript that will be executed by the slaves on change.
+    lock : threading.Lock
+        Lock that will used so make sure threads are not inferring with each other
+
+    Methods
+    -------
+    start()
+        Starts the host. It will search for peers and request to join the cluster.
+    request_heartbeats()
+        Send a heartbeat request to all current peers.
+    start_vote()
+        Initiating the voting process after the master died.
+    vote()
+        Casting a vote for a new master on request of another service and forward to the next peer.
+    update_master()
+        Updates the current master peer.
+    add_peer()
+        Append a new peer to the list of peers.
+    &#34;&#34;&#34;
+
+    def __init__(self, host, port, search_list, masterscript, slavescript):
+        super().__init__(host, port)
+        self.search_list = search_list
+        self.masterscript = masterscript
+        self.slavescript = slavescript
+        self.lock = threading.RLock()
+        self.master = None
+        self.peers = None
+
+    def start(self):
+        &#34;&#34;&#34;
+        Host scans the possible peers for valid answers, and requests to join the cluster.
+        It also determines the master peer and executes the script accordingly.
+        &#34;&#34;&#34;
+        self.__search_peers()
+        if len(self.peers) == 0:
+            self.master = self
+        self.__join_cluster()
+        self.__execute_script()
+
+    def add_peer(self, peer):
+        &#34;&#34;&#34;
+        Append new peer to list of peers.
+
+        :param peer: peer to add to list
+        &#34;&#34;&#34;
+        with self.lock:
+            for p in self.peers:
+                if peer.id == p.id:
+                    # Make sure there are no duplicates
+                    return False
+            self.peers.append(peer)
+        return True
+
+    def request_heartbeats(self):
+        &#34;&#34;&#34;
+        Send a heartbeart request to all current peers.
+        Two consecutive missed heartbeats result in death.
+        &#34;&#34;&#34;
+        with self.lock:
+            for peer in self.peers:
+                try:
+                    r = requests.get(&#34;http://&#34;+peer.host+&#34;:&#34;+str(peer.port)+&#34;/heartbeat&#34;)
+                except requests.exceptions.ConnectionError:
+                    if peer.active:
+                        peer.active = False
+                        logging.info(&#34;{} missed first heartbeat.&#34;.format(peer))
+                    else:
+                        logging.warning(&#34;{} missed second heartbeat and is determined dead.&#34;.format(peer))
+                        self.peers.remove(peer)
+                        if self.master is not None and peer.id == self.master.id:
+                            logging.warning(&#34;master is dead&#34;.format(peer))
+                            if len(self.peers) != 0:
+                                sorted_peers = sorted(self.peers, reverse=True, key=lambda p: p.id)
+                                if self.id &gt; sorted_peers[0].id:
+                                    logging.info(&#34;starting vote&#34;.format(peer))
+                                    self.start_vote()
+                                else:
+                                    logging.info(&#34;waiting to vote&#34;.format(peer))
+                            else:
+                                logging.info(&#34;I am alone, and therefore the new master.&#34;)
+                                self.update_master(self)
+                                return
+                    continue
+                if r.status_code == 200 and r.text == &#34;pong&#34;:
+                    peer.active = True
+
+    def start_vote(self):
+        &#34;&#34;&#34;
+        Will trigger the voting process by initializing the vote list, giving its vote
+        and send the voting request to the next service.
+        &#34;&#34;&#34;
+        with self.lock:
+            all_peers = self.peers.copy()
+        all_peers.append(Peer(self.host, self.port))
+        voting_message = {p.id: 0 for p in all_peers}
+        voting_message[&#34;starter&#34;] = self.id
+        voting_message[&#34;old_master&#34;] = self.master.id
+        self.__cast_vote(voting_message)
+
+    def vote(self, votes_dict):
+        &#34;&#34;&#34;
+        Will vote on request of another service
+        and forward the new vote count to the next peer.
+
+        :param votes_dict: current vote count
+        &#34;&#34;&#34;
+        if votes_dict[&#34;starter&#34;] == self.id:
+            # this node is starter and can announce the new master
+            del(votes_dict[&#34;starter&#34;])
+            del(votes_dict[&#34;old_master&#34;])
+            sorted_votes = [k for k, v in sorted(votes_dict.items(), reverse=True, key=lambda item: item[1])]
+            new_master = None
+            for p in self.peers:
+                if p.id == sorted_votes[0]:
+                    new_master = p
+            if new_master is None:
+                if self.id == sorted_votes[0]:
+                    new_master = self
+                else:
+                    logging.error(&#34;Could not determine new master.&#34;)
+                    return
+            logging.info(&#34;new master is {}&#34;.format(new_master))
+            self.update_master(new_master)
+            for peer in self.peers:
+                try:
+                    r = requests.post(&#34;http://&#34; + peer.host + &#34;:&#34; + str(peer.port) + &#34;/new_master&#34;,
+                                      json=new_master.to_dict())
+                    if r.status_code != 200:
+                        raise requests.exceptions.ConnectionError
+                except requests.exceptions.ConnectionError:
+                    logging.error(&#34;{} did not answer request update master successfully.&#34;.format(peer))
+        else:
+            self.__cast_vote(votes_dict)
+
+    def update_master(self, peer):
+        &#34;&#34;&#34;
+        Finds the peer object that corresponds to the given peer object and set it as master.
+
+        :param peer: new master
+        &#34;&#34;&#34;
+        if self.id == peer.id:
+            self.master = self
+        else:
+            for p in self.peers:
+                if p.id == peer.id:
+                    self.master = peer
+        self.__execute_script()
+
+    def __execute_script(self):
+        if self.master.id == self.id:
+            logging.info(&#34;Executing master script:&#34;)
+            subprocess.Popen(&#34;./&#34;+self.masterscript)
+        else:
+            logging.info(&#34;Executing slave script:&#34;)
+            subprocess.Popen(&#34;./&#34;+self.slavescript)
+
+    def __cast_vote(self, votes_dict):
+        self.master = None
+        with self.lock:
+            for peer in self.peers:
+                if peer.id == votes_dict[&#34;old_master&#34;]:
+                    self.peers.remove(peer)
+                if peer.id == votes_dict[&#34;starter&#34;]:
+                    starter = peer
+            all_peers = self.peers.copy()
+        all_peers.append(Peer(self.host, self.port))
+        all_peers = sorted(all_peers, reverse=True, key=lambda p: p.id)
+        next_peer = all_peers[0]
+        for i in range(1, len(all_peers)):
+            if all_peers[i].id &lt; self.id:
+                next_peer = all_peers[i]
+                break
+        votes_dict[all_peers[0].id] = votes_dict[all_peers[0].id] + 1
+        logging.info(&#34;sending vote to {}&#34;.format(next_peer))
+        try:
+            r = requests.post(&#34;http://&#34;+next_peer.host+&#34;:&#34;+str(next_peer.port)+&#34;/vote&#34;, json=votes_dict)
+            if r.status_code != 200:
+                raise VotingError
+            voted = True
+        except (VotingError, requests.exceptions.ConnectionError):
+            logging.error(&#34;{} did not accept voting message. Sending vote back to starter.&#34;.format(next_peer))
+            voted = False
+        if not voted and starter is not None:
+            try:
+                r = requests.post(&#34;http://&#34;+starter.host+&#34;:&#34;+str(starter.port)+&#34;/vote&#34;, json=votes_dict)
+                if r.status_code != 200:
+                    raise VotingError
+            except (VotingError, requests.exceptions.ConnectionError):
+                logging.error(&#34;Vote starter {} did not accept voting message back. &#34;
+                              &#34;Everything is over, nothing works anymore.&#34;.format(starter))
+
+    def __search_peers(self):
+        self.peers = []
+        for peer in self.search_list:
+            try:
+                r = requests.get(&#34;http://&#34;+peer.host+&#34;:&#34;+str(peer.port)+&#34;/&#34;)
+            except requests.exceptions.ConnectionError:
+                continue
+            if r.status_code == 200 and r.text == &#34;Netzwerkprogrammierung2020&#34;:
+                self.peers.append(peer)
+                logging.info(&#34;Found peer: {}&#34;.format(peer))
+
+    def __join_cluster(self):
+        for peer in self.peers:
+            try:
+                r = requests.post(&#34;http://&#34;+peer.host+&#34;:&#34;+str(peer.port)+&#34;/new_node&#34;, json=self.to_dict())
+            except requests.exceptions.ConnectionError:
+                raise JoiningClusterError
+            if r.status_code == 200:
+                if r.text == &#34;master&#34;:
+                    logging.info(&#34;Found current master: {}&#34;.format(peer))
+                    self.master = peer
+            else:
+                raise JoiningClusterError
+        if self.master is None:
+            raise JoiningClusterError</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="netzwerkprogrammierung.host.Host"><code class="flex name class">
+<span>class <span class="ident">Host</span></span>
+<span>(</span><span>host, port, search_list, masterscript, slavescript)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Host class is sending the HTTP requests to the other services, to determine if they are alive,
+or to vote for a new master. It knows the peer services and the current master.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>search_list</code></strong> :&ensp;<code>[Peer]</code></dt>
+<dd>List of possible peers</dd>
+<dt><strong><code>peers</code></strong> :&ensp;<code>[Peer]</code></dt>
+<dd>List of currently active peers</dd>
+<dt><strong><code>master</code></strong> :&ensp;<code>Peer</code></dt>
+<dd>Current master</dd>
+<dt><strong><code>masterscript</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the masterscript that will be executed by the master on change.</dd>
+<dt><strong><code>slavescript</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the slavescript that will be executed by the slaves on change.</dd>
+<dt><strong><code>lock</code></strong> :&ensp;<code>threading.Lock</code></dt>
+<dd>Lock that will used so make sure threads are not inferring with each other</dd>
+</dl>
+<h2 id="methods">Methods</h2>
+<p>start()
+Starts the host. It will search for peers and request to join the cluster.
+request_heartbeats()
+Send a heartbeat request to all current peers.
+start_vote()
+Initiating the voting process after the master died.
+vote()
+Casting a vote for a new master on request of another service and forward to the next peer.
+update_master()
+Updates the current master peer.
+add_peer()
+Append a new peer to the list of peers.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Host(Peer):
+    &#34;&#34;&#34;
+    Host class is sending the HTTP requests to the other services, to determine if they are alive,
+    or to vote for a new master. It knows the peer services and the current master.
+
+    Attributes
+    ----------
+    search_list : [Peer]
+        List of possible peers
+    peers : [Peer]
+        List of currently active peers
+    master : Peer
+        Current master
+    masterscript : str
+        Name of the masterscript that will be executed by the master on change.
+    slavescript : str
+        Name of the slavescript that will be executed by the slaves on change.
+    lock : threading.Lock
+        Lock that will used so make sure threads are not inferring with each other
+
+    Methods
+    -------
+    start()
+        Starts the host. It will search for peers and request to join the cluster.
+    request_heartbeats()
+        Send a heartbeat request to all current peers.
+    start_vote()
+        Initiating the voting process after the master died.
+    vote()
+        Casting a vote for a new master on request of another service and forward to the next peer.
+    update_master()
+        Updates the current master peer.
+    add_peer()
+        Append a new peer to the list of peers.
+    &#34;&#34;&#34;
+
+    def __init__(self, host, port, search_list, masterscript, slavescript):
+        super().__init__(host, port)
+        self.search_list = search_list
+        self.masterscript = masterscript
+        self.slavescript = slavescript
+        self.lock = threading.RLock()
+        self.master = None
+        self.peers = None
+
+    def start(self):
+        &#34;&#34;&#34;
+        Host scans the possible peers for valid answers, and requests to join the cluster.
+        It also determines the master peer and executes the script accordingly.
+        &#34;&#34;&#34;
+        self.__search_peers()
+        if len(self.peers) == 0:
+            self.master = self
+        self.__join_cluster()
+        self.__execute_script()
+
+    def add_peer(self, peer):
+        &#34;&#34;&#34;
+        Append new peer to list of peers.
+
+        :param peer: peer to add to list
+        &#34;&#34;&#34;
+        with self.lock:
+            for p in self.peers:
+                if peer.id == p.id:
+                    # Make sure there are no duplicates
+                    return False
+            self.peers.append(peer)
+        return True
+
+    def request_heartbeats(self):
+        &#34;&#34;&#34;
+        Send a heartbeart request to all current peers.
+        Two consecutive missed heartbeats result in death.
+        &#34;&#34;&#34;
+        with self.lock:
+            for peer in self.peers:
+                try:
+                    r = requests.get(&#34;http://&#34;+peer.host+&#34;:&#34;+str(peer.port)+&#34;/heartbeat&#34;)
+                except requests.exceptions.ConnectionError:
+                    if peer.active:
+                        peer.active = False
+                        logging.info(&#34;{} missed first heartbeat.&#34;.format(peer))
+                    else:
+                        logging.warning(&#34;{} missed second heartbeat and is determined dead.&#34;.format(peer))
+                        self.peers.remove(peer)
+                        if self.master is not None and peer.id == self.master.id:
+                            logging.warning(&#34;master is dead&#34;.format(peer))
+                            if len(self.peers) != 0:
+                                sorted_peers = sorted(self.peers, reverse=True, key=lambda p: p.id)
+                                if self.id &gt; sorted_peers[0].id:
+                                    logging.info(&#34;starting vote&#34;.format(peer))
+                                    self.start_vote()
+                                else:
+                                    logging.info(&#34;waiting to vote&#34;.format(peer))
+                            else:
+                                logging.info(&#34;I am alone, and therefore the new master.&#34;)
+                                self.update_master(self)
+                                return
+                    continue
+                if r.status_code == 200 and r.text == &#34;pong&#34;:
+                    peer.active = True
+
+    def start_vote(self):
+        &#34;&#34;&#34;
+        Will trigger the voting process by initializing the vote list, giving its vote
+        and send the voting request to the next service.
+        &#34;&#34;&#34;
+        with self.lock:
+            all_peers = self.peers.copy()
+        all_peers.append(Peer(self.host, self.port))
+        voting_message = {p.id: 0 for p in all_peers}
+        voting_message[&#34;starter&#34;] = self.id
+        voting_message[&#34;old_master&#34;] = self.master.id
+        self.__cast_vote(voting_message)
+
+    def vote(self, votes_dict):
+        &#34;&#34;&#34;
+        Will vote on request of another service
+        and forward the new vote count to the next peer.
+
+        :param votes_dict: current vote count
+        &#34;&#34;&#34;
+        if votes_dict[&#34;starter&#34;] == self.id:
+            # this node is starter and can announce the new master
+            del(votes_dict[&#34;starter&#34;])
+            del(votes_dict[&#34;old_master&#34;])
+            sorted_votes = [k for k, v in sorted(votes_dict.items(), reverse=True, key=lambda item: item[1])]
+            new_master = None
+            for p in self.peers:
+                if p.id == sorted_votes[0]:
+                    new_master = p
+            if new_master is None:
+                if self.id == sorted_votes[0]:
+                    new_master = self
+                else:
+                    logging.error(&#34;Could not determine new master.&#34;)
+                    return
+            logging.info(&#34;new master is {}&#34;.format(new_master))
+            self.update_master(new_master)
+            for peer in self.peers:
+                try:
+                    r = requests.post(&#34;http://&#34; + peer.host + &#34;:&#34; + str(peer.port) + &#34;/new_master&#34;,
+                                      json=new_master.to_dict())
+                    if r.status_code != 200:
+                        raise requests.exceptions.ConnectionError
+                except requests.exceptions.ConnectionError:
+                    logging.error(&#34;{} did not answer request update master successfully.&#34;.format(peer))
+        else:
+            self.__cast_vote(votes_dict)
+
+    def update_master(self, peer):
+        &#34;&#34;&#34;
+        Finds the peer object that corresponds to the given peer object and set it as master.
+
+        :param peer: new master
+        &#34;&#34;&#34;
+        if self.id == peer.id:
+            self.master = self
+        else:
+            for p in self.peers:
+                if p.id == peer.id:
+                    self.master = peer
+        self.__execute_script()
+
+    def __execute_script(self):
+        if self.master.id == self.id:
+            logging.info(&#34;Executing master script:&#34;)
+            subprocess.Popen(&#34;./&#34;+self.masterscript)
+        else:
+            logging.info(&#34;Executing slave script:&#34;)
+            subprocess.Popen(&#34;./&#34;+self.slavescript)
+
+    def __cast_vote(self, votes_dict):
+        self.master = None
+        with self.lock:
+            for peer in self.peers:
+                if peer.id == votes_dict[&#34;old_master&#34;]:
+                    self.peers.remove(peer)
+                if peer.id == votes_dict[&#34;starter&#34;]:
+                    starter = peer
+            all_peers = self.peers.copy()
+        all_peers.append(Peer(self.host, self.port))
+        all_peers = sorted(all_peers, reverse=True, key=lambda p: p.id)
+        next_peer = all_peers[0]
+        for i in range(1, len(all_peers)):
+            if all_peers[i].id &lt; self.id:
+                next_peer = all_peers[i]
+                break
+        votes_dict[all_peers[0].id] = votes_dict[all_peers[0].id] + 1
+        logging.info(&#34;sending vote to {}&#34;.format(next_peer))
+        try:
+            r = requests.post(&#34;http://&#34;+next_peer.host+&#34;:&#34;+str(next_peer.port)+&#34;/vote&#34;, json=votes_dict)
+            if r.status_code != 200:
+                raise VotingError
+            voted = True
+        except (VotingError, requests.exceptions.ConnectionError):
+            logging.error(&#34;{} did not accept voting message. Sending vote back to starter.&#34;.format(next_peer))
+            voted = False
+        if not voted and starter is not None:
+            try:
+                r = requests.post(&#34;http://&#34;+starter.host+&#34;:&#34;+str(starter.port)+&#34;/vote&#34;, json=votes_dict)
+                if r.status_code != 200:
+                    raise VotingError
+            except (VotingError, requests.exceptions.ConnectionError):
+                logging.error(&#34;Vote starter {} did not accept voting message back. &#34;
+                              &#34;Everything is over, nothing works anymore.&#34;.format(starter))
+
+    def __search_peers(self):
+        self.peers = []
+        for peer in self.search_list:
+            try:
+                r = requests.get(&#34;http://&#34;+peer.host+&#34;:&#34;+str(peer.port)+&#34;/&#34;)
+            except requests.exceptions.ConnectionError:
+                continue
+            if r.status_code == 200 and r.text == &#34;Netzwerkprogrammierung2020&#34;:
+                self.peers.append(peer)
+                logging.info(&#34;Found peer: {}&#34;.format(peer))
+
+    def __join_cluster(self):
+        for peer in self.peers:
+            try:
+                r = requests.post(&#34;http://&#34;+peer.host+&#34;:&#34;+str(peer.port)+&#34;/new_node&#34;, json=self.to_dict())
+            except requests.exceptions.ConnectionError:
+                raise JoiningClusterError
+            if r.status_code == 200:
+                if r.text == &#34;master&#34;:
+                    logging.info(&#34;Found current master: {}&#34;.format(peer))
+                    self.master = peer
+            else:
+                raise JoiningClusterError
+        if self.master is None:
+            raise JoiningClusterError</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="netzwerkprogrammierung.peer.Peer" href="peer.html#netzwerkprogrammierung.peer.Peer">Peer</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="netzwerkprogrammierung.host.Host.add_peer"><code class="name flex">
+<span>def <span class="ident">add_peer</span></span>(<span>self, peer)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Append new peer to list of peers.</p>
+<p>:param peer: peer to add to list</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_peer(self, peer):
+    &#34;&#34;&#34;
+    Append new peer to list of peers.
+
+    :param peer: peer to add to list
+    &#34;&#34;&#34;
+    with self.lock:
+        for p in self.peers:
+            if peer.id == p.id:
+                # Make sure there are no duplicates
+                return False
+        self.peers.append(peer)
+    return True</code></pre>
+</details>
+</dd>
+<dt id="netzwerkprogrammierung.host.Host.request_heartbeats"><code class="name flex">
+<span>def <span class="ident">request_heartbeats</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send a heartbeart request to all current peers.
+Two consecutive missed heartbeats result in death.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def request_heartbeats(self):
+    &#34;&#34;&#34;
+    Send a heartbeart request to all current peers.
+    Two consecutive missed heartbeats result in death.
+    &#34;&#34;&#34;
+    with self.lock:
+        for peer in self.peers:
+            try:
+                r = requests.get(&#34;http://&#34;+peer.host+&#34;:&#34;+str(peer.port)+&#34;/heartbeat&#34;)
+            except requests.exceptions.ConnectionError:
+                if peer.active:
+                    peer.active = False
+                    logging.info(&#34;{} missed first heartbeat.&#34;.format(peer))
+                else:
+                    logging.warning(&#34;{} missed second heartbeat and is determined dead.&#34;.format(peer))
+                    self.peers.remove(peer)
+                    if self.master is not None and peer.id == self.master.id:
+                        logging.warning(&#34;master is dead&#34;.format(peer))
+                        if len(self.peers) != 0:
+                            sorted_peers = sorted(self.peers, reverse=True, key=lambda p: p.id)
+                            if self.id &gt; sorted_peers[0].id:
+                                logging.info(&#34;starting vote&#34;.format(peer))
+                                self.start_vote()
+                            else:
+                                logging.info(&#34;waiting to vote&#34;.format(peer))
+                        else:
+                            logging.info(&#34;I am alone, and therefore the new master.&#34;)
+                            self.update_master(self)
+                            return
+                continue
+            if r.status_code == 200 and r.text == &#34;pong&#34;:
+                peer.active = True</code></pre>
+</details>
+</dd>
+<dt id="netzwerkprogrammierung.host.Host.start"><code class="name flex">
+<span>def <span class="ident">start</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Host scans the possible peers for valid answers, and requests to join the cluster.
+It also determines the master peer and executes the script accordingly.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def start(self):
+    &#34;&#34;&#34;
+    Host scans the possible peers for valid answers, and requests to join the cluster.
+    It also determines the master peer and executes the script accordingly.
+    &#34;&#34;&#34;
+    self.__search_peers()
+    if len(self.peers) == 0:
+        self.master = self
+    self.__join_cluster()
+    self.__execute_script()</code></pre>
+</details>
+</dd>
+<dt id="netzwerkprogrammierung.host.Host.start_vote"><code class="name flex">
+<span>def <span class="ident">start_vote</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Will trigger the voting process by initializing the vote list, giving its vote
+and send the voting request to the next service.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def start_vote(self):
+    &#34;&#34;&#34;
+    Will trigger the voting process by initializing the vote list, giving its vote
+    and send the voting request to the next service.
+    &#34;&#34;&#34;
+    with self.lock:
+        all_peers = self.peers.copy()
+    all_peers.append(Peer(self.host, self.port))
+    voting_message = {p.id: 0 for p in all_peers}
+    voting_message[&#34;starter&#34;] = self.id
+    voting_message[&#34;old_master&#34;] = self.master.id
+    self.__cast_vote(voting_message)</code></pre>
+</details>
+</dd>
+<dt id="netzwerkprogrammierung.host.Host.update_master"><code class="name flex">
+<span>def <span class="ident">update_master</span></span>(<span>self, peer)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds the peer object that corresponds to the given peer object and set it as master.</p>
+<p>:param peer: new master</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_master(self, peer):
+    &#34;&#34;&#34;
+    Finds the peer object that corresponds to the given peer object and set it as master.
+
+    :param peer: new master
+    &#34;&#34;&#34;
+    if self.id == peer.id:
+        self.master = self
+    else:
+        for p in self.peers:
+            if p.id == peer.id:
+                self.master = peer
+    self.__execute_script()</code></pre>
+</details>
+</dd>
+<dt id="netzwerkprogrammierung.host.Host.vote"><code class="name flex">
+<span>def <span class="ident">vote</span></span>(<span>self, votes_dict)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Will vote on request of another service
+and forward the new vote count to the next peer.</p>
+<p>:param votes_dict: current vote count</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def vote(self, votes_dict):
+    &#34;&#34;&#34;
+    Will vote on request of another service
+    and forward the new vote count to the next peer.
+
+    :param votes_dict: current vote count
+    &#34;&#34;&#34;
+    if votes_dict[&#34;starter&#34;] == self.id:
+        # this node is starter and can announce the new master
+        del(votes_dict[&#34;starter&#34;])
+        del(votes_dict[&#34;old_master&#34;])
+        sorted_votes = [k for k, v in sorted(votes_dict.items(), reverse=True, key=lambda item: item[1])]
+        new_master = None
+        for p in self.peers:
+            if p.id == sorted_votes[0]:
+                new_master = p
+        if new_master is None:
+            if self.id == sorted_votes[0]:
+                new_master = self
+            else:
+                logging.error(&#34;Could not determine new master.&#34;)
+                return
+        logging.info(&#34;new master is {}&#34;.format(new_master))
+        self.update_master(new_master)
+        for peer in self.peers:
+            try:
+                r = requests.post(&#34;http://&#34; + peer.host + &#34;:&#34; + str(peer.port) + &#34;/new_master&#34;,
+                                  json=new_master.to_dict())
+                if r.status_code != 200:
+                    raise requests.exceptions.ConnectionError
+            except requests.exceptions.ConnectionError:
+                logging.error(&#34;{} did not answer request update master successfully.&#34;.format(peer))
+    else:
+        self.__cast_vote(votes_dict)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="netzwerkprogrammierung.peer.Peer" href="peer.html#netzwerkprogrammierung.peer.Peer">Peer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="netzwerkprogrammierung.peer.Peer.to_dict" href="peer.html#netzwerkprogrammierung.peer.Peer.to_dict">to_dict</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="netzwerkprogrammierung" href="index.html">netzwerkprogrammierung</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="netzwerkprogrammierung.host.Host" href="#netzwerkprogrammierung.host.Host">Host</a></code></h4>
+<ul class="two-column">
+<li><code><a title="netzwerkprogrammierung.host.Host.add_peer" href="#netzwerkprogrammierung.host.Host.add_peer">add_peer</a></code></li>
+<li><code><a title="netzwerkprogrammierung.host.Host.request_heartbeats" href="#netzwerkprogrammierung.host.Host.request_heartbeats">request_heartbeats</a></code></li>
+<li><code><a title="netzwerkprogrammierung.host.Host.start" href="#netzwerkprogrammierung.host.Host.start">start</a></code></li>
+<li><code><a title="netzwerkprogrammierung.host.Host.start_vote" href="#netzwerkprogrammierung.host.Host.start_vote">start_vote</a></code></li>
+<li><code><a title="netzwerkprogrammierung.host.Host.update_master" href="#netzwerkprogrammierung.host.Host.update_master">update_master</a></code></li>
+<li><code><a title="netzwerkprogrammierung.host.Host.vote" href="#netzwerkprogrammierung.host.Host.vote">vote</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+</footer>
+</body>
+</html>

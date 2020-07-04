@@ -1,8 +1,11 @@
+"""
+In the host module the Host class is defined.
+"""
+
 import requests
 import logging
 import subprocess
 import threading
-
 from netzwerkprogrammierung.errors import JoiningClusterError, VotingError
 from netzwerkprogrammierung.peer import Peer
 
@@ -11,8 +14,6 @@ class Host(Peer):
     """
     Host class is sending the HTTP requests to the other services, to determine if they are alive,
     or to vote for a new master. It knows the peer services and the current master.
-
-    ...
 
     Attributes
     ----------
@@ -58,7 +59,6 @@ class Host(Peer):
         """
         Host scans the possible peers for valid answers, and requests to join the cluster.
         It also determines the master peer and executes the script accordingly.
-        :return:
         """
         self.__search_peers()
         if len(self.peers) == 0:
@@ -69,8 +69,8 @@ class Host(Peer):
     def add_peer(self, peer):
         """
         Append new peer to list of peers.
+
         :param peer: peer to add to list
-        :return:
         """
         with self.lock:
             for p in self.peers:
@@ -84,7 +84,6 @@ class Host(Peer):
         """
         Send a heartbeart request to all current peers.
         Two consecutive missed heartbeats result in death.
-        :return:
         """
         with self.lock:
             for peer in self.peers:
@@ -118,7 +117,6 @@ class Host(Peer):
         """
         Will trigger the voting process by initializing the vote list, giving its vote
         and send the voting request to the next service.
-        :return:
         """
         with self.lock:
             all_peers = self.peers.copy()
@@ -132,8 +130,8 @@ class Host(Peer):
         """
         Will vote on request of another service
         and forward the new vote count to the next peer.
+
         :param votes_dict: current vote count
-        :return:
         """
         if votes_dict["starter"] == self.id:
             # this node is starter and can announce the new master
@@ -166,8 +164,8 @@ class Host(Peer):
     def update_master(self, peer):
         """
         Finds the peer object that corresponds to the given peer object and set it as master.
+
         :param peer: new master
-        :return:
         """
         if self.id == peer.id:
             self.master = self

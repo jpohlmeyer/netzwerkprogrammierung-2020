@@ -1,11 +1,13 @@
+"""
+In the peer module the Peer class is defined.
+"""
+
 import hashlib
 
 
 class Peer:
     """
     Peer class representing a peer host in a high availability cluster running the same service.
-
-    ...
 
     Attributes
     ----------
@@ -32,6 +34,7 @@ class Peer:
     def to_dict(self):
         """
         Generate a dict, representing the Peer. Used in the payload of requests.
+
         :return: dict with id, host and port
         """
         return {"id": self.id, "host": self.host, "port": self.port}

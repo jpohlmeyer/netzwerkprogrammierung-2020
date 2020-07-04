@@ -1,3 +1,7 @@
+"""
+The service module includes a HTTP server and a ServiceRequestHandler.
+"""
+
 import json
 import logging
 import threading
@@ -8,8 +12,6 @@ from netzwerkprogrammierung.peer import Peer
 class Server:
     """
     Server class for managing the HTTP requests made to the service.
-
-    ...
 
     Attributes
     ----------
@@ -32,7 +34,6 @@ class Server:
     def accept_connections(self):
         """
         Starts the HTTP server to accept connections.
-        :return:
         """
         logging.info("HTTP server started")
         self.httpserver.serve_forever()
@@ -40,7 +41,6 @@ class Server:
     def stop_server(self):
         """
         Stops the HTTP server.
-        :return:
         """
         logging.info("HTTP server stopped")
         self.httpserver.shutdown()
@@ -63,7 +63,6 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         """
         Defines how GET requests are handled. Overrides BaseHTTPRequestHandler method.
-        :return:
         """
         if self.path == "/":
             self.__set_response()
@@ -80,7 +79,6 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         """
         Defines how POST requests are handled. Overrides BaseHTTPRequestHandler method.
-        :return:
         """
         if self.path == "/new_node":
             # Add new node to cluster
@@ -143,8 +141,5 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
         """
         Override log_request method from BaseHTTPRequestHandler to not log every
         normal incoming HTTP request to stdout.
-        :param code: -
-        :param size: -
-        :return:
         """
         pass
