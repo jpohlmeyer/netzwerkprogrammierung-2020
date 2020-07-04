@@ -14,12 +14,14 @@ class Server:
     Attributes
     ----------
     host : Host
-        Host the service is started on
+        Host the service is started on.
 
     Methods
     -------
     acceptConnections()
-        Starts the HTTP server to accept connections
+        Starts the HTTP server to accept connections.
+    stop_server()
+        Stops the HTTP server.
     """
 
     def __init__(self, host):
@@ -47,11 +49,20 @@ class Server:
 class ServiceRequestHandler(BaseHTTPRequestHandler):
     """
     Extends BaseHTTPRequestHandler to serve HTTP Requests.
+
+    Methods
+    -------
+    do_GET()
+        Defines how GET requests are handled.
+    do_POST()
+        Defines how POST requests are handled.
+    log_request()
+        Blocks logging for every normal HTTP request.
     """
 
     def do_GET(self):
         """
-        Defines how GET requests are handled.
+        Defines how GET requests are handled. Overrides BaseHTTPRequestHandler method.
         :return:
         """
         if self.path == "/":
@@ -68,7 +79,7 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         """
-        Defines how POST requests are handled.
+        Defines how POST requests are handled. Overrides BaseHTTPRequestHandler method.
         :return:
         """
         if self.path == "/new_node":
