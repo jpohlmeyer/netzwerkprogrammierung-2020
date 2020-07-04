@@ -189,6 +189,8 @@ class Host(Peer):
             for peer in self.peers:
                 if peer.id == votes_dict["old_master"]:
                     self.peers.remove(peer)
+                if peer.id == votes_dict["starter"]:
+                    starter = peer
             all_peers = self.peers.copy()
         all_peers.append(Peer(self.host, self.port))
         all_peers = sorted(all_peers, reverse=True, key=lambda p: p.id)
@@ -203,8 +205,19 @@ class Host(Peer):
             r = requests.post("http://"+next_peer.host+":"+str(next_peer.port)+"/vote", json=votes_dict)
             if r.status_code != 200:
                 raise VotingError
-        except VotingError:
-            logging.error("{} did not accept voting message".format(next_peer))
+            voted = True
+        except (VotingError, requests.exceptions.ConnectionError):
+            logging.error("{} did not accept voting message. Sending vote back to starter.".format(next_peer))
+            voted = False
+        if not voted and starter is not None:
+            try:
+                r = requests.post("http://"+starter.host+":"+str(starter.port)+"/vote", json=votes_dict)
+                if r.status_code != 200:
+                    raise VotingError
+            except (VotingError, requests.exceptions.ConnectionError):
+                logging.error("Vote starter {} did not accept voting message back. "
+                              "Everything is over, nothing works anymore.".format(starter))
+
 
     def __search_peers(self):
         self.peers = []
