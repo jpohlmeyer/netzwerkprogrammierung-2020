@@ -75,7 +75,8 @@ class Host(Peer):
         with self.lock:
             for p in self.peers:
                 if peer.id == p.id:
-                    return False # Make sure there are no duplicates
+                    # Make sure there are no duplicates
+                    return False
             self.peers.append(peer)
         return True
 
@@ -135,6 +136,7 @@ class Host(Peer):
         :return:
         """
         if votes_dict["starter"] == self.id:
+            # this node is starter and can announce the new master
             del(votes_dict["starter"])
             del(votes_dict["old_master"])
             sorted_votes = [k for k, v in sorted(votes_dict.items(), reverse=True, key=lambda item: item[1])]
@@ -217,7 +219,6 @@ class Host(Peer):
             except (VotingError, requests.exceptions.ConnectionError):
                 logging.error("Vote starter {} did not accept voting message back. "
                               "Everything is over, nothing works anymore.".format(starter))
-
 
     def __search_peers(self):
         self.peers = []

@@ -83,6 +83,7 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
         :return:
         """
         if self.path == "/new_node":
+            # Add new node to cluster
             if self.server.host.master is None:
                 logging.info("Did not allow new peer to join during voting process.")
                 self.__respond_service_unavailable("Service temporarily unavailable.")
@@ -101,12 +102,14 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(answer.encode('utf-8'))
             logging.info("Added peer {} to the cluster.".format(peer))
         elif self.path == "/vote":
+            # vote for new master
             votes_dict = self.__receive_post_payload()
             vote_thread = threading.Thread(target=self.server.host.vote, args=(votes_dict,))
             vote_thread.start()
             self.__set_response()
             self.wfile.write("".encode('utf-8'))
         elif self.path == "/new_master":
+            # get new master from vote starter
             peer_json = self.__receive_post_payload()
             peer = Peer(peer_json['host'], int(peer_json['port']))
             self.server.host.update_master(peer)
@@ -114,6 +117,7 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write("".encode('utf-8'))
             logging.info("New master {}.".format(peer))
         else:
+            # undefined operation
             self.send_response(404)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
