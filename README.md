@@ -51,7 +51,6 @@ python3 -m netzwerkprogrammierung --host localhost --port 7502 --searchlist loca
 ## Documentation
 
 A current HTML version of the PyDoc documentation is available as an artifact of the docs build job.
-The most recent artifact of the master branch can be found [here](https://gitlab.ub.uni-bielefeld.de/jpohlmeyer/netzwerkprogrammierung-2020/-/jobs/artifacts/master/browse?job=docs).
 
 The documentation is also published on gitlab pages [here](http://jpohlmeyer.pages.ub.uni-bielefeld.de/netzwerkprogrammierung-2020/netzwerkprogrammierung/).
 
