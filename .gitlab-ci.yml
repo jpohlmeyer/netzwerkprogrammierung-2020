@@ -1,7 +1,24 @@
 image: "python:3"
 
+# Change pip's cache directory to be inside the project directory since we can
+# only cache local items.
+variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+# Pip's cache doesn't store the python packages
+# https://pip.pypa.io/en/stable/reference/pip_install/#caching
+#
+# If you want to also cache the installed packages, you have to install
+# them in a virtualenv and cache it as well.
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
 before_script:
-  - python3 -V
+  - python -V               # Print out python version for debugging
+  - python -m venv venv
+  - source venv/bin/activate
   - pip install -r requirements.txt
   - pip install pdoc3
 
@@ -11,7 +28,7 @@ test:
 
 docs:
   script:
-    - pdoc3 --html --force -output-dir docs netzwerkprogrammierung
+    - pdoc3 --html -output-dir docs netzwerkprogrammierung
   artifacts:
     paths:
       - docs
