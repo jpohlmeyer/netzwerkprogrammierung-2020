@@ -22,12 +22,15 @@ optional arguments:
   --host HOST           Host the service is started on. Default: localhost
   --port PORT           Host the service is started on. Default: 7500
   --searchlist SEARCHLIST
-                        Comma-seperated list of possible hosts with ports for autodetection of peer services. Example: 'localhost:1234,localhost:4567' Default: Empty list
+                        Comma-seperated list of possible currently running hosts with ports for autodetection of peer services. Example: 'localhost:1234,localhost:4567' Default: Empty list
   --masterscript MASTERSCRIPT
                         Script that will be executed by the new master after the master changes. Default: masterscript.sh
   --slavescript SLAVESCRIPT
                         Script that will be executed by every slave after the master changes. Default: slavescript.sh
 ```
+
+The searchlist needs to include all currently running peer services for autodetection.
+Future newly started peers will request addition to the cluster and do not need to be included in this list.
 
 ## Example
 

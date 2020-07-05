@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--port", type=int, default="7500",
                         help="Host the service is started on. Default: 7500")
     parser.add_argument("--searchlist", default="",
-                        help="Comma-seperated list of possible hosts with ports for autodetection of peer services. Example: 'localhost:1234,localhost:4567' Default: Empty list")
+                        help="Comma-seperated list of possible currently running hosts with ports for autodetection of peer services. Example: 'localhost:1234,localhost:4567' Default: Empty list")
     parser.add_argument("--masterscript", default="masterscript.sh",
                         help="Script that will be executed by the new master after the master changes. Default: masterscript.sh")
     parser.add_argument("--slavescript", default="slavescript.sh",
