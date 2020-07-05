@@ -80,7 +80,7 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
             if not self.server.host.add_peer(peer):
                 logging.info("Did not allow duplicate peer to join.")
                 self.__respond_service_unavailable("Duplicate ID detected.")
-                return  # Do not accept new peers to the cluster while there is no new master yet.
+                return  # Do not accept duplicate peers to the cluster
             self.__set_response()
             if self.server.host.master == self.server.host:
                 answer = "master"
