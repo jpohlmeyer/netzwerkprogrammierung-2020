@@ -66,8 +66,9 @@ pdoc3 --html -o docs netzwerkprogrammierung
 ## Tests
 
 The unit tests can be found in the tests package and are executed by the Gitlab CI.
+Gitlab CI generates a html report for the tests run and a coverage html report.
 
-They can be run locally with the following command:
+The tests can be run locally with the following command:
 
 ```shell script
 python -m pytest tests
