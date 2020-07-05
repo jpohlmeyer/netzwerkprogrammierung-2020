@@ -62,7 +62,9 @@ pdoc3 --html -o docs netzwerkprogrammierung
 
 ## Tests
 
-The unit tests can be found in the tests package and can be run with the following command:
+The unit tests can be found in the tests package and are executed by the Gitlab CI. 
+
+They can be run locally with the following command:
 
 ```shell script
 python3 -m unittest discover
