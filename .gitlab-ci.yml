@@ -24,7 +24,7 @@ before_script:
 
 tests:
   script:
-    - python -m pytest --cov=netzwerkprogrammierung --cov-report --html=report.html html tests
+    - python -m pytest --cov=netzwerkprogrammierung --cov-report html --html=report.html tests
   artifacts:
     paths:
       - htmlcov
