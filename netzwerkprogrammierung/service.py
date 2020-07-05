@@ -1,5 +1,5 @@
 """
-The service module includes a HTTP server and a ServiceRequestHandler.
+This module includes a HTTP server and a ServiceRequestHandler.
 """
 
 import json
@@ -13,20 +13,17 @@ class Server:
     """
     Server class for managing the HTTP requests made to the service.
 
-    Attributes
-    ----------
-    host : Host
-        Host the service is started on.
-
-    Methods
-    -------
-    acceptConnections()
-        Starts the HTTP server to accept connections.
-    stop_server()
-        Stops the HTTP server.
+    Attributes:
+        host : Host, Host the service is started on.
     """
 
     def __init__(self, host):
+        """
+        Init the server.
+
+        Args:
+            host: Host, host corresponding to the server.
+        """
         self.host = host
         self.httpserver = HTTPServer((self.host.host, self.host.port), ServiceRequestHandler)
         self.httpserver.host = self.host
@@ -50,15 +47,6 @@ class Server:
 class ServiceRequestHandler(BaseHTTPRequestHandler):
     """
     Extends BaseHTTPRequestHandler to serve HTTP Requests.
-
-    Methods
-    -------
-    do_GET()
-        Defines how GET requests are handled.
-    do_POST()
-        Defines how POST requests are handled.
-    log_request()
-        Blocks logging for every normal HTTP request.
     """
 
     def do_GET(self):
@@ -123,16 +111,31 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write("Not Found.".encode('utf-8'))
 
     def __receive_post_payload(self):
+        """
+        Decode json content as dict.
+
+        Returns:
+            dict corresponding to the json object/
+        """
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length).decode('utf-8')
         return json.loads(post_data)
 
     def __set_response(self):
+        """
+        Set standard response.
+        """
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
 
     def __respond_service_unavailable(self, message):
+        """
+        Set response if the service is unavailable.
+
+        Args:
+            message: Message to be sent.
+        """
         self.send_response(503)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
@@ -140,6 +143,8 @@ class ServiceRequestHandler(BaseHTTPRequestHandler):
 
     def log_request(self, code='-', size='-'):
         """
+        Define how requests are logged.
+
         Override log_request method from BaseHTTPRequestHandler to not log every
         normal incoming HTTP request to stdout.
         """

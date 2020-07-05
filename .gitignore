@@ -1,3 +1,7 @@
+# additional ignored files and folders
+
+docs/
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm+all,linux,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm+all,linux,python

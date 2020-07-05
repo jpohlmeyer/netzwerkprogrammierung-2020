@@ -1,4 +1,6 @@
 """
+Service to determine the master in a cluster of controllers.
+
 This service tries to establish a connection with peer services started on other controllers
 to determine which controller is the master server in a high availabitlity cluster.
 """

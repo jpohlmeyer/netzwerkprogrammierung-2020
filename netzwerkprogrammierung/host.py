@@ -1,5 +1,5 @@
 """
-In the host module the Host class is defined.
+In this module the Host class is defined.
 """
 
 import requests
@@ -12,41 +12,32 @@ from netzwerkprogrammierung.peer import Peer
 
 class Host(Peer):
     """
+    Communicating with other services via HTTP requests.
+
     Host class is sending the HTTP requests to the other services, to determine if they are alive,
-    or to vote for a new master. It knows the peer services and the current master.
+    requesting to be added to the cluster or to vote for and announcing a new master.
+    It knows the peer services and the current master.
 
-    Attributes
-    ----------
-    search_list : [Peer]
-        List of possible peers
-    peers : [Peer]
-        List of currently active peers
-    master : Peer
-        Current master
-    masterscript : str
-        Name of the masterscript that will be executed by the master on change.
-    slavescript : str
-        Name of the slavescript that will be executed by the slaves on change.
-    lock : threading.Lock
-        Lock that will used so make sure threads are not inferring with each other
-
-    Methods
-    -------
-    start()
-        Starts the host. It will search for peers and request to join the cluster.
-    request_heartbeats()
-        Send a heartbeat request to all current peers.
-    start_vote()
-        Initiating the voting process after the master died.
-    vote()
-        Casting a vote for a new master on request of another service and forward to the next peer.
-    update_master()
-        Updates the current master peer.
-    add_peer()
-        Append a new peer to the list of peers.
+    Attributes:
+        search_list: type [Peer], List of possible peers
+        peers: [Peer], List of currently active peers
+        master: Peer, Current master
+        masterscript: str, Name of the masterscript that will be executed by the master on change.
+        slavescript: str,  Name of the slavescript that will be executed by the slaves on change.
+        lock: threading.Lock, Lock that will used so make sure threads are not inferring with each other
     """
 
     def __init__(self, host, port, search_list, masterscript, slavescript):
+        """
+        Init Host.
+
+        Args:
+            host: hostname or ip of the host service
+            port: port of the host service
+            search_list: List of possible peers for autodetection
+            masterscript: Name of the masterscript that will be executed by the master on change.
+            slavescript: Name of the slavescript that will be executed by the slaves on change.
+        """
         super().__init__(host, port)
         self.search_list = search_list
         self.masterscript = masterscript
@@ -57,6 +48,8 @@ class Host(Peer):
 
     def start(self):
         """
+        Start the host, adding it to the cluster.
+
         Host scans the possible peers for valid answers, and requests to join the cluster.
         It also determines the master peer and executes the script accordingly.
         """
@@ -70,7 +63,8 @@ class Host(Peer):
         """
         Append new peer to list of peers.
 
-        :param peer: peer to add to list
+        Args:
+            peer: peer to add to list
         """
         with self.lock:
             for p in self.peers:
@@ -83,7 +77,9 @@ class Host(Peer):
     def request_heartbeats(self):
         """
         Send a heartbeart request to all current peers.
-        Two consecutive missed heartbeats result in death.
+
+        Two consecutive missed heartbeats result in death, peer is then removed from cluster.
+        If the dead peer is the master a vote is triggered by the peer with the highest ID.
         """
         with self.lock:
             for peer in self.peers:
@@ -115,6 +111,8 @@ class Host(Peer):
 
     def start_vote(self):
         """
+        Trigger the voting process.
+
         Will trigger the voting process by initializing the vote list, giving its vote
         and send the voting request to the next service.
         """
@@ -128,10 +126,15 @@ class Host(Peer):
 
     def vote(self, votes_dict):
         """
+        Vote when receiving a vote request.
+
         Will vote on request of another service
         and forward the new vote count to the next peer.
+        If the host is the starter of the vote and
+        received the final voting message back it will determine the new master.
 
-        :param votes_dict: current vote count
+        Args:
+            votes_dict: current vote count (id: int), starter id and old_master id in a dict
         """
         if votes_dict["starter"] == self.id:
             # this node is starter and can announce the new master
@@ -165,7 +168,8 @@ class Host(Peer):
         """
         Finds the peer object that corresponds to the given peer object and set it as master.
 
-        :param peer: new master
+        Args:
+            peer: new master
         """
         if self.id == peer.id:
             self.master = self
@@ -176,6 +180,11 @@ class Host(Peer):
         self.__execute_script()
 
     def __execute_script(self):
+        """
+        Execute the corresponding script for master or slave hosts.
+
+        The script will be executed asynchronously.
+        """
         if self.master.id == self.id:
             logging.info("Executing master script:")
             subprocess.Popen("./"+self.masterscript)
@@ -184,6 +193,15 @@ class Host(Peer):
             subprocess.Popen("./"+self.slavescript)
 
     def __cast_vote(self, votes_dict):
+        """
+        Vote for a new master.
+
+        Remove the old master from the list of peers and vote for a new master.
+        Send the voting message to the next peer.
+
+        Args:
+            votes_dict: current vote count
+        """
         self.master = None
         with self.lock:
             for peer in self.peers:
@@ -219,6 +237,9 @@ class Host(Peer):
                               "Everything is over, nothing works anymore.".format(starter))
 
     def __search_peers(self):
+        """
+        Autodetect active peers from the searchlist of possible peers.
+        """
         self.peers = []
         for peer in self.search_list:
             try:
@@ -230,6 +251,12 @@ class Host(Peer):
                 logging.info("Found peer: {}".format(peer))
 
     def __join_cluster(self):
+        """
+        Send a request to join the cluster to all active peers.
+
+        Raises:
+            JoiningClusterError: An error occured during the process of joining the cluster.
+        """
         for peer in self.peers:
             try:
                 r = requests.post("http://"+peer.host+":"+str(peer.port)+"/new_node", json=self.to_dict())
