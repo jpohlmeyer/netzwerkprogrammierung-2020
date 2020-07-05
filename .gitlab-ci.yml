@@ -26,9 +26,9 @@ test:
   script:
     - python -m unittest discover
 
-docs:
+pages:
   script:
-    - pdoc3 --html --output-dir docs netzwerkprogrammierung
+    - pdoc3 --html --output-dir public netzwerkprogrammierung
   artifacts:
     paths:
-      - docs
+      - public
