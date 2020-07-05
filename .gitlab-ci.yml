@@ -28,7 +28,7 @@ test:
 
 docs:
   script:
-    - pdoc3 --html -output-dir docs netzwerkprogrammierung
+    - pdoc3 --html --output-dir docs netzwerkprogrammierung
   artifacts:
     paths:
       - docs
