@@ -168,6 +168,49 @@ class ServerTest(unittest.TestCase):
         self.assertEqual(host.master.host, "masterhost", "Host name of master should be masterhost")
         self.assertEqual(host.master.port, 7001, "Port of master should be 7001")
 
+    def test_voting(self):
+        host1 = MockHost("localhost", 7000, [], "masterscript.sh", "slavescript.sh")
+        server = Server(host1)
+        server_thread = threading.Thread(target=server.accept_connections)
+        server_thread.start()
+        host1.start()
+
+        self.assertEqual(host1.master.id, host1.id, "master should be host1")
+
+        host2 = MockHost("localhost", 7001, [host1], "masterscript.sh", "slavescript.sh")
+        server2 = Server(host2)
+        server2_thread = threading.Thread(target=server2.accept_connections)
+        server2_thread.start()
+        host2.start()
+
+        self.assertEqual(host2.master.id, host1.id, "master should be host1")
+
+        host3 = MockHost("localhost", 7002, [host1, host2], "masterscript.sh", "slavescript.sh")
+        server3 = Server(host3)
+        server3_thread = threading.Thread(target=server3.accept_connections)
+        server3_thread.start()
+        host3.start()
+
+        self.assertEqual(host3.master.id, host1.id, "master should be host1")
+
+        server.stop_server()
+        server_thread.join()
+
+        host2.request_heartbeats()
+        host3.request_heartbeats()
+        host2.request_heartbeats()
+        host3.request_heartbeats()
+
+        time.sleep(2)
+
+        self.assertEqual(host2.master.id, host2.id, "master should be host2")
+        self.assertEqual(host3.master.id, host2.id, "master should be host2")
+
+        server2.stop_server()
+        server2_thread.join()
+        server3.stop_server()
+        server3_thread.join()
+
     def test_post_404(self):
         host = MockHost("localhost", 7000, [], "masterscript.sh", "slavescript.sh")
         server = Server(host)
