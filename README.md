@@ -71,5 +71,5 @@ Gitlab CI generates a html report for the tests run and a coverage html report.
 The tests can be run locally with the following command:
 
 ```shell script
-python -m pytest tests
+python3 -m pytest tests
 ```
